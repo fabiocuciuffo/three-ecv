@@ -14,7 +14,7 @@ import {
   BoxGeometry,
   BackSide
 } from 'three'
-
+import SkibidiToilet from '../../assets/models/toilet.glb'
 import * as CANNON from 'cannon'
 
 import type {
@@ -220,7 +220,7 @@ export class ExampleScene extends Scene implements Lifecycle {
 
   public async load(): Promise<void> {
     this.gltf.load(
-      "/assets/models/toilet.glb",
+      SkibidiToilet,
       (gltf) => {
         const box = new Box3().setFromObject(gltf.scene)
         const height = box.max.y - box.min.y
