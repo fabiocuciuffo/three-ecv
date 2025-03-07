@@ -9,13 +9,12 @@ import {
 } from "three"
 
 export class ParticleSystem {
-    private world: CANNON.World
-    private scene: Scene
+    private readonly world: CANNON.World
+    private readonly scene: Scene
     private particles: Particle[] = []
-    private lastModelPosition: Vector3 = new Vector3(0, 0, 0)
-    private audio: HTMLAudioElement
-    private instancedMesh: InstancedMesh
-    private particleCount: number = 1000
+    private readonly audio: HTMLAudioElement
+    private readonly instancedMesh: InstancedMesh
+    private readonly particleCount: number = 1000
     private currentParticleIndex: number = 0
 
     public constructor(world: CANNON.World, scene: Scene) {
@@ -82,7 +81,6 @@ export class ParticleSystem {
     private getModelPosition(): Vector3 | null {
         const model = this.scene.getObjectByName("toiletModel")
         if (model) {
-            this.lastModelPosition = model.position.clone()
             return model.position.clone()
         }
         return null // Return null if model is not found
@@ -146,7 +144,7 @@ export class ParticleSystem {
         while (this.particles.length > this.particleCount) {
             const oldestParticle = this.particles.shift()
             if (oldestParticle) {
-                this.world.removeBody(oldestParticle.body)
+                this.world.remove(oldestParticle.body)
             }
         }
     }
@@ -156,7 +154,7 @@ export class ParticleSystem {
         this.particles = this.particles.filter((particle, index) => {
           particle.lifetime -= deltaTime
           if (particle.isExpired()) {
-            this.world.removeBody(particle.body)
+            this.world.remove(particle.body)
             this.instancedMesh.setMatrixAt(particle.index, new Matrix4()) // Clear the matrix of the expired particle
             this.instancedMesh.instanceMatrix.needsUpdate = true
             return false
@@ -168,7 +166,7 @@ export class ParticleSystem {
 
     public dispose(): void {
         this.particles.forEach((particle) => {
-            this.world.removeBody(particle.body)
+            this.world.remove(particle.body)
         })
         this.particles = []
         window.removeEventListener("keydown", this.onKeyDown.bind(this))
@@ -208,6 +206,6 @@ export class Particle {
     }
 
     public dispose(): void {
-        this.body.world?.removeBody(this.body)
+        this.body.world?.remove(this.body)
     }
 }

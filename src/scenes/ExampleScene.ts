@@ -1,6 +1,5 @@
 import {
   Scene,
-  PointLight,
   PerspectiveCamera,
   AmbientLight,
   PlaneGeometry,
@@ -13,7 +12,6 @@ import {
   Group,
   Quaternion,
   BoxGeometry,
-  MeshStandardMaterial,
   BackSide
 } from 'three'
 
@@ -26,7 +24,7 @@ import type {
 } from '~/core'
 
 import { GLTFLoader } from 'three/examples/jsm/Addons.js'
-import { ParticleSystem, Particle } from '../particles/ParticleSystem' // Import particle system
+import { ParticleSystem } from '../particles/ParticleSystem' // Import particle system
 
 export interface MainSceneParamaters {
   clock: Clock
@@ -50,16 +48,16 @@ export class ExampleScene extends Scene implements Lifecycle {
   public wall4: Mesh
   
   // Cannon.js physics world
-  private world: CANNON.World
+  private readonly world: CANNON.World
   
   // Physics bodies
-  private planeBody: CANNON.Body
-  private wallBodies: CANNON.Body[] = []
+  private readonly planeBody: CANNON.Body
+  private readonly wallBodies: CANNON.Body[] = []
   private modelBody: CANNON.Body | null = null
   
   // Model and movement properties
   private loadedModel: Group | null = null
-  private moveSpeed: number = 0.2
+  private readonly moveSpeed: number = 0.2
   private keyState: { [key: string]: boolean } = {
     KeyW: false,
     KeyA: false,
@@ -69,7 +67,7 @@ export class ExampleScene extends Scene implements Lifecycle {
   }
 
   // Particle system
-  private particleSystem: ParticleSystem
+  private readonly particleSystem: ParticleSystem
 
   public constructor({
     clock,
@@ -239,7 +237,7 @@ export class ExampleScene extends Scene implements Lifecycle {
         this.modelBody = new CANNON.Body({
           mass: 10,
           shape: modelShape,
-          material: new CANNON.Material()
+          material: new CANNON.Material('modelMaterial')
         })
         this.modelBody.position.set(0, 1, 0)
         this.world.addBody(this.modelBody)
@@ -313,10 +311,10 @@ export class ExampleScene extends Scene implements Lifecycle {
 
     // Remove physics bodies
     if (this.modelBody) {
-      this.world.removeBody(this.modelBody)
+      this.world.remove(this.modelBody)
     }
-    this.wallBodies.forEach(body => this.world.removeBody(body))
-    this.world.removeBody(this.planeBody)
+    this.wallBodies.forEach(body => this.world.remove(body))
+    this.world.remove(this.planeBody)
 
     this.particleSystem.dispose()
   }
