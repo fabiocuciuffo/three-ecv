@@ -9,12 +9,14 @@ import {
 } from "three"
 
 import SkibidiAudio from "../audio/diarhee.mp3"
+import ScreamAudio from "../audio/scream.mp3" // Importer le nouveau son de cri
 
 export class ParticleSystem {
     private readonly world: CANNON.World
     private readonly scene: Scene
     private particles: Particle[] = []
-    private readonly audio: HTMLAudioElement
+    private readonly diarrheaAudio: HTMLAudioElement // Renommé pour clarité
+    private readonly screamAudio: HTMLAudioElement // Nouveau son de cri
     private readonly instancedMesh: InstancedMesh
     private readonly particleCount: number = 1000
     private currentParticleIndex: number = 0
@@ -22,8 +24,14 @@ export class ParticleSystem {
     public constructor(world: CANNON.World, scene: Scene) {
         this.world = world
         this.scene = scene
-        this.audio = new Audio(SkibidiAudio)
-        this.audio.loop = true
+        
+        // Initialiser les deux sons
+        this.diarrheaAudio = new Audio(SkibidiAudio)
+        this.diarrheaAudio.loop = true
+        
+        this.screamAudio = new Audio(ScreamAudio)
+        this.screamAudio.loop = true // Changé à true pour permettre la lecture en boucle
+        
         this.setupEventListeners()
         this.startParticleCheck()
 
@@ -55,28 +63,41 @@ export class ParticleSystem {
             this.instancedMesh.visible = true // Show the instanced mesh when space and shift are pressed
             const modelPosition = this.getModelPosition()
             if (modelPosition) {
-                this.audio.play()
+                // Jouer les deux sons
+                this.playDiarrhea()
+                this.playScream()
+                
                 this.emitParticlesUnderModel(modelPosition)
-                if (this.audio.paused) {
-                    this.audio.currentTime = 0 // Ensure the audio starts from the beginning
-                    this.audio.play().catch((error) => {
-                        console.error("Audio playback failed:", error)
-                    })
-                }
             }
         } else if (event.code === "Space" && !event.shiftKey) {
             this.instancedMesh.visible = true // Show the instanced mesh when space is pressed
             const modelPosition = this.getModelPosition()
             if (modelPosition) {
-                this.audio.play()
+                // Jouer seulement le son de diarrhée
+                this.playDiarrhea()
+                
                 this.emitParticles(modelPosition)
-                if (this.audio.paused) {
-                    this.audio.currentTime = 0 // Ensure the audio starts from the beginning
-                    this.audio.play().catch((error) => {
-                        console.error("Audio playback failed:", error)
-                    })
-                }
             }
+        }
+    }
+    
+    // Méthode pour jouer le son de diarrhée
+    private playDiarrhea(): void {
+        if (this.diarrheaAudio.paused) {
+            this.diarrheaAudio.currentTime = 0
+            this.diarrheaAudio.play().catch((error) => {
+                console.error("Diarrhea audio playback failed:", error)
+            })
+        }
+    }
+    
+    // Méthode pour jouer le son de cri
+    private playScream(): void {
+        if (this.screamAudio.paused) {  // Ajouté une vérification comme pour diarrheaAudio
+            this.screamAudio.currentTime = 0
+            this.screamAudio.play().catch((error) => {
+                console.error("Scream audio playback failed:", error)
+            })
         }
     }
 
@@ -90,7 +111,10 @@ export class ParticleSystem {
 
     private onKeyUp(event: KeyboardEvent): void {
         if (event.code === "Space") {
-            this.audio.pause()
+            // Arrêter les deux sons
+            this.diarrheaAudio.pause()
+            this.screamAudio.pause()  // Ajouter cette ligne pour arrêter le son de cri
+            
             if (this.particles.length === 0) {
                 this.instancedMesh.visible = false // Hide the instanced mesh if no particles are present
             }
@@ -171,6 +195,14 @@ export class ParticleSystem {
             this.world.remove(particle.body)
         })
         this.particles = []
+        
+        // S'assurer que les deux sons sont arrêtés et déchargés
+        this.diarrheaAudio.pause()
+        this.diarrheaAudio.src = ""
+        
+        this.screamAudio.pause()
+        this.screamAudio.src = ""
+        
         window.removeEventListener("keydown", this.onKeyDown.bind(this))
         window.removeEventListener("keyup", this.onKeyUp.bind(this))
     }

@@ -29,6 +29,7 @@ export class App implements Lifecycle {
     this.camera = new PerspectiveCamera(20, 1, 0.1, 100)
     this.camera.position.set(0, 15, 12)
     this.camera.lookAt(0,0,0)
+    console.log("Initial camera position in App:", this.camera.position);
 
     this.renderer = new WebGLRenderer({
       canvas,
@@ -128,6 +129,11 @@ export class App implements Lifecycle {
    * Tick handler called by the loop
    */
   public tick = (): void => {
+    // Debug de la position de la caméra toutes les 60 frames environ
+    if (Math.random() < 0.017) { // ~1/60
+      console.log("Regular camera position check:", this.camera.position);
+    }
+
     this.update()
     this.render()
   }
