@@ -2,7 +2,6 @@ import { WebGLRenderer, PerspectiveCamera } from 'three'
 import { Clock, Loop, Viewport, type Lifecycle } from '~/core'
 import type { GUI } from '~/GUI'
 import { Composer } from '~/Composer'
-import { Controls } from '~/Controls'
 import { ExampleScene } from '~/scenes/ExampleScene'
 
 export interface AppParameters {
@@ -15,7 +14,6 @@ export class App implements Lifecycle {
   public renderer: WebGLRenderer
   public composer: Composer
   public camera: PerspectiveCamera
-  public controls: Controls
   public loop: Loop
   public clock: Clock
   public viewport: Viewport
@@ -28,7 +26,9 @@ export class App implements Lifecycle {
   }: AppParameters = {}) {
     this.debug = debug
     this.clock = new Clock()
-    this.camera = new PerspectiveCamera(30, 1, 0.1, 50)
+    this.camera = new PerspectiveCamera(20, 1, 0.1, 100)
+    this.camera.position.set(0, 15, 12)
+    this.camera.lookAt(0,0,0)
 
     this.renderer = new WebGLRenderer({
       canvas,
@@ -58,12 +58,6 @@ export class App implements Lifecycle {
       camera: this.camera
     })
 
-    this.controls = new Controls({
-      camera: this.camera,
-      element: this.renderer.domElement,
-      clock: this.clock
-    })
-
     this.loop = new Loop({
       tick: this.tick
     })
@@ -90,7 +84,6 @@ export class App implements Lifecycle {
     this.viewport.start()
     this.clock.start()
     this.loop.start()
-    this.controls.start()
     this.gui?.start()
   }
 
@@ -98,7 +91,6 @@ export class App implements Lifecycle {
    * Stop the app rendering loop
    */
   public stop(): void {
-    this.controls.stop()
     this.viewport.stop()
     this.loop.stop()
   }
@@ -108,7 +100,6 @@ export class App implements Lifecycle {
    */
   public update(): void {
     this.clock.update()
-    this.controls.update()
     this.viewport.update()
     this.scene.update()
     this.composer.update()
@@ -125,7 +116,6 @@ export class App implements Lifecycle {
    * Stop the app and dispose of used resourcess
    */
   public dispose(): void {
-    this.controls.dispose()
     this.viewport.dispose()
     this.loop.dispose()
     this.scene.dispose()

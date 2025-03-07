@@ -50,9 +50,9 @@ export class Controls extends CameraControls implements Lifecycle {
 
     this.clock = clock
     this.element = element
-    this.minDistance = 4
-    this.maxDistance = 45
-    this.setPosition(0, 0, -10)
+    this.minDistance = 0
+    this.maxDistance = 30
+    this.setPosition(0, 15, 10)
   }
 
   public start(): void {
