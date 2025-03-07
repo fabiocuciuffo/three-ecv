@@ -8,6 +8,8 @@ import {
     Matrix4,
 } from "three"
 
+import SkibidiAudio from "../audio/diarhee.mp3"
+
 export class ParticleSystem {
     private readonly world: CANNON.World
     private readonly scene: Scene
@@ -20,7 +22,7 @@ export class ParticleSystem {
     public constructor(world: CANNON.World, scene: Scene) {
         this.world = world
         this.scene = scene
-        this.audio = new Audio("/src/audio/diarhee.mp3")
+        this.audio = new Audio(SkibidiAudio)
         this.audio.loop = true
         this.setupEventListeners()
         this.startParticleCheck()
