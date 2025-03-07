@@ -28,6 +28,7 @@ export class BMaterial extends CustomShaderMaterial {
     console.log(this)
 
     this.clock = clock
+    //commentaire
   }
 
   public async load(): Promise<void> {
