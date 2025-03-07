@@ -1,18 +1,11 @@
 import { MeshStandardMaterial, TextureLoader, RepeatWrapping } from 'three'
-import { Clock, Lifecycle } from '~/core'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 import vertexShader from '~/shaders/b.vert'
 import fragmentShader from '~/shaders/b.frag'
 import noiseMapSrc from '~~/assets/textures/texturegna-2.png'
 
-export interface BMaterialParameters {
-  clock: Clock
-}
-
 export class BMaterial extends CustomShaderMaterial {
-  public constructor({
-    clock
-  }: BMaterialParameters) {
+  public constructor() {
     super({
       vertexShader,
       fragmentShader,
@@ -26,9 +19,6 @@ export class BMaterial extends CustomShaderMaterial {
     })
 
     console.log(this)
-
-    this.clock = clock
-    //commentaire
   }
 
   public async load(): Promise<void> {
@@ -38,8 +28,8 @@ export class BMaterial extends CustomShaderMaterial {
       })
     ])
 
-    noiseMap.wrapS = RepeatWrapping
-    noiseMap.wrapT = RepeatWrapping
+    // noiseMap.wrapS = RepeatWrapping
+    // noiseMap.wrapT = RepeatWrapping
 
     this.uniforms.noiseMap.value = noiseMap
   }
